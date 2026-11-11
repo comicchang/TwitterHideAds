@@ -22,7 +22,13 @@ import java.util.Set;
  * promoted post actions.
  */
 final class PromotedActionScanner {
-    static final String ACTION_ENUM_CLASS = "com.x.models.PostActionType";
+
+    /**
+     * The post-action enum. Pre-obfuscation name {@code com.x.models.PostActionType};
+     * obfuscated to {@code com.x.models.y5} on X 12.41.0. Only the suffix rule of
+     * action.bf depends on this flag, and only when the exact rule did not match.
+     */
+    static final String ACTION_ENUM_CLASS = "com.x.models.y5";
 
     /** Names of the OP_ACTION_NAMES result codes, indexed by code. */
     private static final String[] ACTION_NAMES = {

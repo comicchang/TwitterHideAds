@@ -121,3 +121,45 @@ Not used: hooking the googlessp item renderers (`com.x.googlessp.impl.y` and
 `x0`, both `com.x.urt.t1` implementations). `y` draws RTB ads, but `x0` draws
 every Event Summary (`UrtTimelineEventSummary`, `m0`), which routes through
 googlessp on 12.37.2, so a package-wide renderer rule hides real content.
+
+## X 12.41.0 adaptation
+
+Static verification of X 12.41.0-prod.01 (`312410001`, /tmp/x.apk) against
+every hook anchor; no hook mechanism required redesign, one constant moved.
+
+- Post render boundaries: the adaptive resolver's structural contract is
+  unchanged. The 12.28 boundary set (`com.x.mappers.module.a/.h`, model
+  `c5`) is gone; 12.41 renders posts through `com.x.urt.items.post.v1.a`
+  (51 params, Composer at 48), `v1.c` (19 params, Composer at 16) and
+  `com.x.urt.items.post.h.a` (`(a6, y2, Modifier, Composer, int)`), all
+  scored 395 under `discovery.bf` (model `com.x.urt.items.post.a6`, a
+  concrete data class, so the interface bonus is 0). The witness rejects
+  the non-post `v1`/`h` composables that share the shape.
+- Video Tab copy method: moved from `com.x.urt.b2.a` to
+  `com.x.urt.g2.a(Lcom/x/urt/g2; Lkotlinx/collections/immutable/b; Lcom/x/urt/f2; Z I)`
+  — same shape (static, declaring class directly in `com.x.urt`, first
+  parameter equals the return type, kotlinx immutable list second,
+  boolean + int tail, n = 5). The 12.28 `o0$d` paging-state family is now
+  `com.x.urt.g2` (original `com.x.models.timelines.v`, items `b`, mutation
+  `f2`). Resolved by score, not by name; `RtbAdFilter` hooks the `g2`
+  constructor for the paging-state RTB drop.
+- RTB ads: `UrtTimelineRtb*` toString prefix still present; the item class
+  moved from `com.x.models.timelines.items.r1` to `...items.p1` (data class
+  `UrtTimelineRtbImageAd(advertiserAvatarImageUrl=…)`). Recognition is by
+  prefix, not name. googlessp (`com.x.googlessp.impl.*`) still present.
+- Persistent list copy: `kotlinx.collections.immutable.b` still declares
+  nothing; `immutableList.a#d()` returns builder `immutableList.d` whose
+  `b()` builds back — the shape pair `PersistentListCopier` resolves is
+  intact.
+- Promoted metadata: `TimelinePromotedMetadata` remains fully obfuscated
+  (no `*PromotedMetadata` class name survives), so classification leans on
+  the entry-id grammar; `a6` still carries six String fields including
+  `a`, the entry-id slot on 12.28.
+- Post actions: the action enum moved from `com.x.models.PostActionType`
+  to `com.x.models.y5` (enum constants `PromotedDismissAd`,
+  `PromotedAdsInfo`, `PromotedReportAd` still declared). `PromotedActionScanner.ACTION_ENUM_CLASS`
+  updated; the exact rule is unaffected (name-based), the suffix rule is
+  restored by the flag.
+
+Adaptation branch: `adapt-12.41.0`. No Discovery/Brainfuck changes were
+needed: thresholds and grammar are name-independent.
